@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from 'src/app/shared/user.service';
 
 @Component({
   selector: 'app-registration',
@@ -7,9 +8,34 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegistrationComponent implements OnInit {
 
-  constructor() { }
+  constructor(public service: UserService) { }
 
   ngOnInit() {
+  }
+
+
+  onSubmit() {
+    this.service.registration().subscribe(
+      (res: any) => {
+        if (res.succeeded) {
+          this.service.formModel.reset();
+        } else {
+          res.errors.forEach(element => {
+            switch (element.code) {
+              case 'DuplicateUserName':
+                //User name is already taken
+                break;
+              default:
+                //Registration failed
+                break;
+            }
+          });
+        }
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
 }
